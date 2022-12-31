@@ -24,6 +24,9 @@ dependencies {
 
     implementation("org.apache.commons:commons-lang3:3.12.0")
 
+    // For ByteStreams testing
+    testImplementation("com.google.guava:guava:31.1-jre")
+
     compileOnly(libs.lombok)
     annotationProcessor(libs.lombok)
     testCompileOnly(libs.lombok)

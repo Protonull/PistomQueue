@@ -1,10 +1,13 @@
 package uk.protonull.pistomqueue;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import lombok.experimental.UtilityClass;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.sound.Sound;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.GameMode;
@@ -12,6 +15,7 @@ import net.minestom.server.entity.Player;
 import net.minestom.server.event.instance.AddEntityToInstanceEvent;
 import net.minestom.server.event.instance.RemoveEntityFromInstanceEvent;
 import net.minestom.server.event.player.PlayerLoginEvent;
+import net.minestom.server.event.player.PlayerPluginMessageEvent;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.instance.generator.GenerationUnit;
@@ -20,6 +24,7 @@ import net.minestom.server.world.DimensionType;
 import net.minestom.server.world.biomes.Biome;
 import net.minestom.server.world.biomes.BiomeEffects;
 import net.minestom.server.world.biomes.BiomeParticle;
+import uk.protonull.pistomqueue.utilities.StringIterator;
 
 @UtilityClass
 public class Main {
@@ -74,6 +79,13 @@ public class Main {
                 });
     }
 
+    public final Sound XP_SOUND = Sound.sound(
+            Key.key("entity.player.levelup"),
+            Sound.Source.PLAYER,
+            100.0f,
+            1.0f
+    );
+
     public void main(final String[] args) {
         MinecraftServer.setBrandName("PistomQueue");
 
@@ -89,6 +101,24 @@ public class Main {
             player.setGameMode(Config.FORCE_GAMEMODE ? Config.FORCED_GAMEMODE : GameMode.ADVENTURE);
             player.setAutoViewable(!Config.HIDE_PLAYERS);
         });
+
+        if (Config.PLAY_XP) {
+            MinecraftServer.getGlobalEventHandler().addListener(PlayerPluginMessageEvent.class, (event) -> {
+                https://github.com/AlexProgrammerDE/PistonQueue/blob/main/bukkit/src/main/java/net/pistonmaster/pistonqueue/bukkit/QueuePluginMessageListener.java
+                if (!"piston:queue".equals(event.getIdentifier())) {
+                    return;
+                }
+                final var in = new StringIterator(event.getMessage());
+                if (!"xp".equals(in.next())) {
+                    return;
+                }
+                in.toStream()
+                        .map(UUID::fromString)
+                        .map(PLAYERS::get)
+                        .filter(Objects::nonNull)
+                        .forEach((player) -> player.playSound(XP_SOUND, Sound.Emitter.self()));
+            });
+        }
 
         SERVER.start(Config.HOST, Config.PORT);
     }
