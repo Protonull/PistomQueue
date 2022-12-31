@@ -32,6 +32,8 @@ public class Config {
             final @NotNull String name,
             final int defaultValue
     ) {
+        // Yes, I do know about Integer.getInteger() but it'll silently fallback to the defaultValue if the found value
+        // is not correctly formatted as a number. I'd prefer to make the error explicit to the user.
         final String property = System.getProperty(name);
         if (property == null) {
             return defaultValue;
