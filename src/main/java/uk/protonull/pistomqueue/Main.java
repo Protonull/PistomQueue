@@ -19,6 +19,7 @@ import net.minestom.server.event.player.PlayerPluginMessageEvent;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.instance.generator.GenerationUnit;
+import net.minestom.server.network.packet.client.play.ClientChatMessagePacket;
 import net.minestom.server.utils.NamespaceID;
 import net.minestom.server.world.DimensionType;
 import net.minestom.server.world.biomes.Biome;
@@ -118,6 +119,11 @@ public class Main {
                         .filter(Objects::nonNull)
                         .forEach((player) -> player.playSound(XP_SOUND, Sound.Emitter.self()));
             });
+        }
+
+        if (Config.DISABLE_CHAT) {
+            // Override chat packet handler... perhaps an unnecessary micro-optimisation over just cancelling the chat event
+            MinecraftServer.getPacketListenerManager().setListener(ClientChatMessagePacket.class, (packet, player) -> {});
         }
 
         SERVER.start(Config.HOST, Config.PORT);
