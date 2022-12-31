@@ -25,17 +25,7 @@ public class Config {
             final @NotNull String name,
             final boolean defaultValue
     ) {
-        final String property = System.getProperty(name);
-        if (property == null) {
-            return defaultValue;
-        }
-        try {
-            return Boolean.parseBoolean(property);
-        }
-        catch (final NumberFormatException ignored) {
-            MinecraftServer.LOGGER.warn("Could not parse config boolean [name: " + name + "] [value: " + property + "], defaulting to: " + defaultValue);
-            return defaultValue;
-        }
+        return Boolean.parseBoolean(System.getProperty(name, Boolean.toString(defaultValue)));
     }
 
     public int parseInt(
