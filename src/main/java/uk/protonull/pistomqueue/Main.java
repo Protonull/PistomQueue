@@ -73,6 +73,7 @@ public class Main {
 
     public final Map<UUID, Player> PLAYERS = new TreeMap<>();
     static {
+        //noinspection UnstableApiUsage
         WORLD.eventNode()
                 .addListener(AddEntityToInstanceEvent.class, (event) -> {
                     if (event.getEntity() instanceof final Player player) {
@@ -107,6 +108,7 @@ public class Main {
             ));
             final boolean isExempted =  Config.EXEMPTED_PLAYERS.contains(player.getUsername());
             if (Config.HIDE_PLAYERS) {
+                //noinspection UnstableApiUsage
                 player.updateViewableRule((otherPlayer) -> !isExempted);
             }
             player.setGameMode(Config.FORCE_GAMEMODE && !isExempted ? Config.FORCED_GAMEMODE : GameMode.ADVENTURE);
