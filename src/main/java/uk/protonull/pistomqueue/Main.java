@@ -95,6 +95,7 @@ public class Main {
 
     public void main(final String[] args) {
         MinecraftServer.setBrandName("PistomQueue");
+        MinecraftServer.getExtensionManager().setLoadOnStartup(false);
 
         MinecraftServer.getGlobalEventHandler().addListener(PlayerLoginEvent.class, (event) -> {
             event.setSpawningInstance(WORLD);
