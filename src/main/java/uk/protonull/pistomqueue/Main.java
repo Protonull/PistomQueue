@@ -1,7 +1,10 @@
 package uk.protonull.pistomqueue;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
@@ -16,6 +19,8 @@ import net.minestom.server.event.instance.AddEntityToInstanceEvent;
 import net.minestom.server.event.instance.RemoveEntityFromInstanceEvent;
 import net.minestom.server.event.player.PlayerLoginEvent;
 import net.minestom.server.event.player.PlayerPluginMessageEvent;
+import net.minestom.server.extras.bungee.BungeeCordProxy;
+import net.minestom.server.extras.velocity.VelocityProxy;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.instance.generator.GenerationUnit;
@@ -25,6 +30,7 @@ import net.minestom.server.world.DimensionType;
 import net.minestom.server.world.biomes.Biome;
 import net.minestom.server.world.biomes.BiomeEffects;
 import net.minestom.server.world.biomes.BiomeParticle;
+import org.apache.commons.lang3.StringUtils;
 import uk.protonull.pistomqueue.utilities.StringIterator;
 
 @UtilityClass
@@ -124,6 +130,28 @@ public class Main {
         if (Config.DISABLE_CHAT) {
             // Override chat packet handler... perhaps an unnecessary micro-optimisation over just cancelling the chat event
             MinecraftServer.getPacketListenerManager().setListener(ClientChatMessagePacket.class, (packet, player) -> {});
+        }
+
+        switch (Config.PROXY.toUpperCase()) {
+            case "NONE" -> {}
+            case "BUNGEE" -> {
+                BungeeCordProxy.enable();
+                BungeeCordProxy.setBungeeGuardTokens(Optional.ofNullable(System.getProperty("bungeeTokens"))
+                        .map((value) -> StringUtils.split(value, ","))
+                        .map((values) -> new HashSet<>(List.of(values)))
+                        .orElse(null));
+                MinecraftServer.LOGGER.info("Enabling Bungee proxy");
+            }
+            case "VELOCITY" -> {
+                Optional.ofNullable(System.getProperty("velocitySecret"))
+                        .ifPresentOrElse(VelocityProxy::enable, () -> {
+                            MinecraftServer.LOGGER.warn("You have enabled Velocity but haven't provided a secret. Set the 'velocitySecret' property.");
+                        });
+                MinecraftServer.LOGGER.info("Enabling Velocity proxy");
+            }
+            default -> {
+                MinecraftServer.LOGGER.warn("You've specified an unknown proxy [" + Config.PROXY + "] which isn't supported!");
+            }
         }
 
         SERVER.start(Config.HOST, Config.PORT);

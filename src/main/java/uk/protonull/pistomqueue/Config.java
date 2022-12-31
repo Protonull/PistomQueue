@@ -16,6 +16,7 @@ public class Config {
     public final GameMode FORCED_GAMEMODE = EnumUtils.getEnum(GameMode.class, System.getProperty("forcedGamemode"), GameMode.SPECTATOR);
     public final boolean DISABLE_CHAT = parseBool("disableChat", false);
     public final boolean PLAY_XP = parseBool("playXP", true);
+    public final String PROXY = System.getProperty("proxy", "NONE");
 
     // ############################################################
     // Property Parsers
