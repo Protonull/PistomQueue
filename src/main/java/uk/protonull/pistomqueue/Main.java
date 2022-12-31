@@ -1,10 +1,9 @@
 package uk.protonull.pistomqueue;
 
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
@@ -144,10 +143,10 @@ public class Main {
             case "NONE" -> {}
             case "BUNGEE" -> {
                 BungeeCordProxy.enable();
-                BungeeCordProxy.setBungeeGuardTokens(Optional.ofNullable(System.getProperty("bungeeTokens"))
+                Optional.ofNullable(System.getProperty("bungeeTokens"))
                         .map((value) -> StringUtils.split(value, ","))
-                        .map((values) -> new HashSet<>(List.of(values)))
-                        .orElse(null));
+                        .map(Set::of)
+                        .ifPresent(BungeeCordProxy::setBungeeGuardTokens);
                 MinecraftServer.LOGGER.info("Enabling Bungee proxy");
             }
             case "VELOCITY" -> {
