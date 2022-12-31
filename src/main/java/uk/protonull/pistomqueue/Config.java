@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.Optional;
 import lombok.experimental.UtilityClass;
 import net.minestom.server.MinecraftServer;
-import net.minestom.server.entity.GameMode;
-import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -15,8 +13,6 @@ public class Config {
     public final String HOST = System.getProperty("host", "0.0.0.0");
     public final int PORT = parseInt("port", 25565);
     public final boolean HIDE_PLAYERS = parseBool("hidePlayers", false);
-    public final boolean FORCE_GAMEMODE = parseBool("forceGamemode", false);
-    public final GameMode FORCED_GAMEMODE = EnumUtils.getEnum(GameMode.class, System.getProperty("forcedGamemode"), GameMode.SPECTATOR);
     public final boolean DISABLE_CHAT = parseBool("disableChat", false);
     public final boolean PLAY_XP = parseBool("playXP", true);
     public final String PROXY = System.getProperty("proxy", "NONE");

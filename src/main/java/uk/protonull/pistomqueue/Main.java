@@ -111,7 +111,7 @@ public class Main {
                 //noinspection UnstableApiUsage
                 player.updateViewableRule((otherPlayer) -> !isExempted);
             }
-            player.setGameMode(Config.FORCE_GAMEMODE && !isExempted ? Config.FORCED_GAMEMODE : GameMode.ADVENTURE);
+            player.setGameMode(GameMode.ADVENTURE);
         });
 
         if (Config.PLAY_XP) {

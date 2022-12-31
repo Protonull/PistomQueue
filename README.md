@@ -33,16 +33,6 @@ java -jar \
     # Whether players should be hidden from one another
     -DhidePlayers=false \
     
-    # Whether players should be given a specific game mode
-    -DforceGamemode=false \
-    
-    # The game mode to force, if enabled:
-    # - SURVIVAL
-    # - CREATIVE
-    # - ADVENTURE
-    # - SPECTATOR
-    -DforcedGamemode="SPECTATOR" \
-    
     # Whether chatting should be disabled
     -DdisableChat=false \
     
