@@ -1,9 +1,12 @@
 package uk.protonull.pistomqueue;
 
+import java.util.List;
+import java.util.Optional;
 import lombok.experimental.UtilityClass;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.entity.GameMode;
 import org.apache.commons.lang3.EnumUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 @UtilityClass
@@ -17,6 +20,10 @@ public class Config {
     public final boolean DISABLE_CHAT = parseBool("disableChat", false);
     public final boolean PLAY_XP = parseBool("playXP", true);
     public final String PROXY = System.getProperty("proxy", "NONE");
+    public final List<String> EXEMPTED_PLAYERS = Optional.ofNullable(System.getProperty("exemptedPlayers"))
+            .map((value) -> StringUtils.split(value, ","))
+            .map(List::of)
+            .orElse(List.of());
 
     // ############################################################
     // Property Parsers

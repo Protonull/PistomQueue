@@ -17,6 +17,7 @@ import net.minestom.server.entity.GameMode;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.instance.AddEntityToInstanceEvent;
 import net.minestom.server.event.instance.RemoveEntityFromInstanceEvent;
+import net.minestom.server.event.player.PlayerChatEvent;
 import net.minestom.server.event.player.PlayerLoginEvent;
 import net.minestom.server.event.player.PlayerPluginMessageEvent;
 import net.minestom.server.extras.bungee.BungeeCordProxy;
@@ -24,7 +25,6 @@ import net.minestom.server.extras.velocity.VelocityProxy;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.instance.generator.GenerationUnit;
-import net.minestom.server.network.packet.client.play.ClientChatMessagePacket;
 import net.minestom.server.utils.NamespaceID;
 import net.minestom.server.world.DimensionType;
 import net.minestom.server.world.biomes.Biome;
@@ -105,8 +105,11 @@ public class Main {
                     1,
                     ThreadLocalRandom.current().nextDouble(-16, 16)
             ));
-            player.setGameMode(Config.FORCE_GAMEMODE ? Config.FORCED_GAMEMODE : GameMode.ADVENTURE);
-            player.setAutoViewable(!Config.HIDE_PLAYERS);
+            final boolean isExempted =  Config.EXEMPTED_PLAYERS.contains(player.getUsername());
+            if (Config.HIDE_PLAYERS) {
+                player.updateViewableRule((otherPlayer) -> !isExempted);
+            }
+            player.setGameMode(Config.FORCE_GAMEMODE && !isExempted ? Config.FORCED_GAMEMODE : GameMode.ADVENTURE);
         });
 
         if (Config.PLAY_XP) {
@@ -128,8 +131,11 @@ public class Main {
         }
 
         if (Config.DISABLE_CHAT) {
-            // Override chat packet handler... perhaps an unnecessary micro-optimisation over just cancelling the chat event
-            MinecraftServer.getPacketListenerManager().setListener(ClientChatMessagePacket.class, (packet, player) -> {});
+            MinecraftServer.getGlobalEventHandler().addListener(PlayerChatEvent.class, (event) -> {
+                if (!Config.EXEMPTED_PLAYERS.contains(event.getPlayer().getUsername())) {
+                    event.setCancelled(true);
+                }
+            });
         }
 
         switch (Config.PROXY.toUpperCase()) {
