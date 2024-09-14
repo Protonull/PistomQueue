@@ -28,7 +28,6 @@ import net.minestom.server.world.DimensionType;
 import net.minestom.server.world.biomes.Biome;
 import net.minestom.server.world.biomes.BiomeEffects;
 import net.minestom.server.world.biomes.BiomeParticle;
-import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import uk.protonull.pistomqueue.utilities.StringIterator;
 
@@ -144,7 +143,7 @@ public final class Main {
             case "BUNGEE" -> {
                 BungeeCordProxy.enable();
                 Optional.ofNullable(System.getProperty("bungeeTokens"))
-                    .map((value) -> StringUtils.split(value, ","))
+                    .map((value) -> value.split(","))
                     .map(Set::of)
                     .ifPresent(BungeeCordProxy::setBungeeGuardTokens);
                 MinecraftServer.LOGGER.info("Enabling Bungee proxy");

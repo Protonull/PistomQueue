@@ -3,7 +3,6 @@ package uk.protonull.pistomqueue;
 import java.util.List;
 import java.util.Optional;
 import net.minestom.server.MinecraftServer;
-import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 public final class Config {
@@ -14,7 +13,7 @@ public final class Config {
     public static final boolean PLAY_XP = parseBool("playXP", true);
     public static final String PROXY = System.getProperty("proxy", "NONE");
     public static final List<String> EXEMPTED_PLAYERS = Optional.ofNullable(System.getProperty("exemptedPlayers"))
-        .map((value) -> StringUtils.split(value, ","))
+        .map((value) -> value.split(","))
         .map(List::of)
         .orElse(List.of());
 

@@ -19,8 +19,6 @@ dependencies {
             implementation("commons-net:commons-net:3.11.1")
         }
     }
-
-    implementation("org.apache.commons:commons-lang3:3.12.0")
 }
 
 java {
