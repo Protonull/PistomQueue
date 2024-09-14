@@ -1,7 +1,7 @@
 plugins {
     id("java")
-    // ShadowJar (https://github.com/johnrengelman/shadow/releases)
-    id("com.github.johnrengelman.shadow") version "7.1.2"
+    // ShadowJar (https://github.com/GradleUp/shadow/releases)
+    id("com.gradleup.shadow") version "8.3.1"
 }
 
 group = "uk.protonull.pistomqueue"
