@@ -7,10 +7,11 @@ import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 
 public final class StringIterator implements Iterator<String> {
-
     private final ByteBuffer buffer;
 
-    public StringIterator(final byte @NotNull [] buffer) {
+    public StringIterator(
+        final byte @NotNull [] buffer
+    ) {
         this.buffer = ByteBuffer.wrap(buffer);
     }
 
@@ -22,7 +23,7 @@ public final class StringIterator implements Iterator<String> {
     @Override
     public @NotNull String next() {
         // TODO: This can probably be done way better
-        final byte[] bytes = new byte[this.buffer.getShort()];
+        final var bytes = new byte[this.buffer.getShort()];
         for (int i = 0; i < bytes.length; i++) {
             bytes[i] = this.buffer.get();
         }
@@ -37,5 +38,4 @@ public final class StringIterator implements Iterator<String> {
         forEachRemaining(builder::add);
         return builder.build();
     }
-
 }

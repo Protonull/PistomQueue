@@ -29,69 +29,71 @@ import net.minestom.server.world.biomes.Biome;
 import net.minestom.server.world.biomes.BiomeEffects;
 import net.minestom.server.world.biomes.BiomeParticle;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import uk.protonull.pistomqueue.utilities.StringIterator;
 
-public class Main {
-
+public final class Main {
     private static final MinecraftServer SERVER = MinecraftServer.init();
 
-    public static final DimensionType DIMENSION;
-    static {
-        MinecraftServer.getDimensionTypeManager().addDimension(DIMENSION = DimensionType
+    public static final DimensionType DIMENSION; static {
+        MinecraftServer.getDimensionTypeManager().addDimension(
+            DIMENSION = DimensionType
                 .builder(NamespaceID.from("minecraft:queue"))
                 .effects("minecraft:the_end")
                 .build()
         );
     }
 
-    public static final Biome BIOME;
-    static {
-        MinecraftServer.getBiomeManager().addBiome(BIOME = Biome
+    public static final Biome BIOME; static {
+        MinecraftServer.getBiomeManager().addBiome(
+            BIOME = Biome
                 .builder()
                 .name(NamespaceID.from("minecraft:queue"))
-                .effects(BiomeEffects
+                .effects(
+                    BiomeEffects
                         .builder()
                         .biomeParticle(new BiomeParticle(
-                                0.3f,
-                                new BiomeParticle.NormalOption(NamespaceID.from("minecraft:underwater")))
+                            0.3f,
+                            new BiomeParticle.NormalOption(NamespaceID.from("minecraft:underwater")))
                         )
-                        .build())
+                        .build()
+                )
                 .build()
         );
     }
 
-    public static final InstanceContainer WORLD = MinecraftServer.getInstanceManager().createInstanceContainer(DIMENSION);
-    static {
+    public static final InstanceContainer WORLD = MinecraftServer.getInstanceManager().createInstanceContainer(DIMENSION); static {
         WORLD.setGenerator((final GenerationUnit unit) -> {
             unit.modifier().fillBiome(BIOME);
             unit.modifier().fillHeight(0, 1, Block.BARRIER);
         });
     }
 
-    public static final Map<UUID, Player> PLAYERS = new TreeMap<>();
-    static {
+    public static final Map<UUID, Player> PLAYERS = new TreeMap<>(); static {
         //noinspection UnstableApiUsage
         WORLD.eventNode()
-                .addListener(AddEntityToInstanceEvent.class, (event) -> {
-                    if (event.getEntity() instanceof final Player player) {
-                        PLAYERS.put(player.getUuid(), player);
-                    }
-                })
-                .addListener(RemoveEntityFromInstanceEvent.class, (event) -> {
-                    if (event.getEntity() instanceof final Player player) {
-                        PLAYERS.remove(player.getUuid());
-                    }
-                });
+            .addListener(AddEntityToInstanceEvent.class, (event) -> {
+                if (event.getEntity() instanceof final Player player) {
+                    PLAYERS.put(player.getUuid(), player);
+                }
+            })
+            .addListener(RemoveEntityFromInstanceEvent.class, (event) -> {
+                if (event.getEntity() instanceof final Player player) {
+                    PLAYERS.remove(player.getUuid());
+                }
+            });
     }
 
     public static final Sound XP_SOUND = Sound.sound(
-            Key.key("entity.player.levelup"),
-            Sound.Source.PLAYER,
-            100.0f,
-            1.0f
+        Key.key("entity.player.levelup"),
+        Sound.Source.PLAYER,
+        100.0f,
+        1.0f
     );
 
-    public static void main(final String[] args) {
+    public static void main(
+        final @NotNull String @NotNull [] args
+    ) {
         MinecraftServer.setBrandName("PistomQueue");
 
         MinecraftServer.getGlobalEventHandler().addListener(AsyncPlayerConfigurationEvent.class, (event) -> {
@@ -99,11 +101,11 @@ public class Main {
             final Player player = event.getPlayer();
             // Put the player relatively randomly
             player.setRespawnPoint(new Pos(
-                    ThreadLocalRandom.current().nextDouble(-16, 16),
-                    1,
-                    ThreadLocalRandom.current().nextDouble(-16, 16)
+                ThreadLocalRandom.current().nextDouble(-16, 16),
+                1,
+                ThreadLocalRandom.current().nextDouble(-16, 16)
             ));
-            final boolean isExempted =  Config.EXEMPTED_PLAYERS.contains(player.getUsername());
+            final boolean isExempted = Config.EXEMPTED_PLAYERS.contains(player.getUsername());
             if (Config.HIDE_PLAYERS) {
                 //noinspection UnstableApiUsage
                 player.updateViewableRule((otherPlayer) -> !isExempted);
@@ -122,10 +124,10 @@ public class Main {
                     return;
                 }
                 in.toStream()
-                        .map(UUID::fromString)
-                        .map(PLAYERS::get)
-                        .filter(Objects::nonNull)
-                        .forEach((player) -> player.playSound(XP_SOUND, Sound.Emitter.self()));
+                    .map(UUID::fromString)
+                    .map(PLAYERS::get)
+                    .filter(Objects::nonNull)
+                    .forEach((player) -> player.playSound(XP_SOUND, Sound.Emitter.self()));
             });
         }
 
@@ -142,24 +144,23 @@ public class Main {
             case "BUNGEE" -> {
                 BungeeCordProxy.enable();
                 Optional.ofNullable(System.getProperty("bungeeTokens"))
-                        .map((value) -> StringUtils.split(value, ","))
-                        .map(Set::of)
-                        .ifPresent(BungeeCordProxy::setBungeeGuardTokens);
+                    .map((value) -> StringUtils.split(value, ","))
+                    .map(Set::of)
+                    .ifPresent(BungeeCordProxy::setBungeeGuardTokens);
                 MinecraftServer.LOGGER.info("Enabling Bungee proxy");
             }
             case "VELOCITY" -> {
                 Optional.ofNullable(System.getProperty("velocitySecret"))
-                        .ifPresentOrElse(VelocityProxy::enable, () -> {
-                            MinecraftServer.LOGGER.warn("You have enabled Velocity but haven't provided a secret. Set the 'velocitySecret' property.");
-                        });
+                    .ifPresentOrElse(VelocityProxy::enable, () -> {
+                        MinecraftServer.LOGGER.warn("You have enabled Velocity but haven't provided a secret. Set the 'velocitySecret' property.");
+                    });
                 MinecraftServer.LOGGER.info("Enabling Velocity proxy");
             }
             default -> {
-                MinecraftServer.LOGGER.warn("You've specified an unknown proxy [" + Config.PROXY + "] which isn't supported!");
+                MinecraftServer.LOGGER.warn("You've specified an unknown proxy [{}] which isn't supported!", Config.PROXY);
             }
         }
 
         SERVER.start(Config.HOST, Config.PORT);
     }
-
 }
