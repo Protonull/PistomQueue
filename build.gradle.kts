@@ -37,6 +37,9 @@ tasks {
         manifest {
             attributes["Main-Class"] = "uk.protonull.pistomqueue.Main"
         }
+        from(file("LICENCE")) {
+            rename { "LICENSE_PistomQueue" } // Use US spelling
+        }
     }
     build {
         dependsOn(shadowJar)
