@@ -7,7 +7,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
-import lombok.experimental.UtilityClass;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.minestom.server.MinecraftServer;
@@ -32,12 +31,11 @@ import net.minestom.server.world.biomes.BiomeParticle;
 import org.apache.commons.lang3.StringUtils;
 import uk.protonull.pistomqueue.utilities.StringIterator;
 
-@UtilityClass
 public class Main {
 
-    private final MinecraftServer SERVER = MinecraftServer.init();
+    private static final MinecraftServer SERVER = MinecraftServer.init();
 
-    public final DimensionType DIMENSION;
+    public static final DimensionType DIMENSION;
     static {
         MinecraftServer.getDimensionTypeManager().addDimension(DIMENSION = DimensionType
                 .builder(NamespaceID.from("minecraft:queue"))
@@ -46,7 +44,7 @@ public class Main {
         );
     }
 
-    public final Biome BIOME;
+    public static final Biome BIOME;
     static {
         MinecraftServer.getBiomeManager().addBiome(BIOME = Biome
                 .builder()
@@ -62,7 +60,7 @@ public class Main {
         );
     }
 
-    public final InstanceContainer WORLD = MinecraftServer.getInstanceManager().createInstanceContainer(DIMENSION);
+    public static final InstanceContainer WORLD = MinecraftServer.getInstanceManager().createInstanceContainer(DIMENSION);
     static {
         WORLD.setGenerator((final GenerationUnit unit) -> {
             unit.modifier().fillBiome(BIOME);
@@ -70,7 +68,7 @@ public class Main {
         });
     }
 
-    public final Map<UUID, Player> PLAYERS = new TreeMap<>();
+    public static final Map<UUID, Player> PLAYERS = new TreeMap<>();
     static {
         //noinspection UnstableApiUsage
         WORLD.eventNode()
@@ -86,14 +84,14 @@ public class Main {
                 });
     }
 
-    public final Sound XP_SOUND = Sound.sound(
+    public static final Sound XP_SOUND = Sound.sound(
             Key.key("entity.player.levelup"),
             Sound.Source.PLAYER,
             100.0f,
             1.0f
     );
 
-    public void main(final String[] args) {
+    public static void main(final String[] args) {
         MinecraftServer.setBrandName("PistomQueue");
 
         MinecraftServer.getGlobalEventHandler().addListener(AsyncPlayerConfigurationEvent.class, (event) -> {

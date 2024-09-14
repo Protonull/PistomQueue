@@ -21,11 +21,6 @@ dependencies {
     }
 
     implementation("org.apache.commons:commons-lang3:3.12.0")
-
-    compileOnly(libs.lombok)
-    annotationProcessor(libs.lombok)
-    testCompileOnly(libs.lombok)
-    testAnnotationProcessor(libs.lombok)
 }
 
 java {
