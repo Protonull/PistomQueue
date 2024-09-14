@@ -9,16 +9,14 @@ version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
-    // For Minestom
-    maven("https://jitpack.io")
+    maven("https://jitpack.io") // For com.github.MadMartian:hydrazine-path-finding
 }
 
 dependencies {
-
-    implementation("com.github.Minestom:Minestom:-SNAPSHOT") {
+    implementation("net.minestom:minestom-snapshots:+") {
         isChanging = true
         constraints {
-            implementation("commons-net:commons-net:3.9.0")
+            implementation("commons-net:commons-net:3.11.1")
         }
     }
 
@@ -31,8 +29,11 @@ dependencies {
 }
 
 java {
+    withSourcesJar()
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
+        languageVersion = JavaLanguageVersion.of(21)
     }
 }
 

@@ -16,8 +16,8 @@ import net.minestom.server.entity.GameMode;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.instance.AddEntityToInstanceEvent;
 import net.minestom.server.event.instance.RemoveEntityFromInstanceEvent;
+import net.minestom.server.event.player.AsyncPlayerConfigurationEvent;
 import net.minestom.server.event.player.PlayerChatEvent;
-import net.minestom.server.event.player.PlayerLoginEvent;
 import net.minestom.server.event.player.PlayerPluginMessageEvent;
 import net.minestom.server.extras.bungee.BungeeCordProxy;
 import net.minestom.server.extras.velocity.VelocityProxy;
@@ -95,9 +95,8 @@ public class Main {
 
     public void main(final String[] args) {
         MinecraftServer.setBrandName("PistomQueue");
-        MinecraftServer.getExtensionManager().setLoadOnStartup(false);
 
-        MinecraftServer.getGlobalEventHandler().addListener(PlayerLoginEvent.class, (event) -> {
+        MinecraftServer.getGlobalEventHandler().addListener(AsyncPlayerConfigurationEvent.class, (event) -> {
             event.setSpawningInstance(WORLD);
             final Player player = event.getPlayer();
             // Put the player relatively randomly
