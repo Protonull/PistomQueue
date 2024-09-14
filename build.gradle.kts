@@ -24,16 +24,10 @@ dependencies {
 
     implementation("org.apache.commons:commons-lang3:3.12.0")
 
-    // For ByteStreams testing
-    testImplementation("com.google.guava:guava:31.1-jre")
-
     compileOnly(libs.lombok)
     annotationProcessor(libs.lombok)
     testCompileOnly(libs.lombok)
     testAnnotationProcessor(libs.lombok)
-
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.0")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.0")
 }
 
 java {
@@ -50,9 +44,6 @@ tasks {
     }
     build {
         dependsOn(shadowJar)
-    }
-    test {
-        useJUnitPlatform()
     }
     shadowJar {
         mergeServiceFiles()
