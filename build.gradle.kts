@@ -33,6 +33,10 @@ java {
 }
 
 tasks {
+    compileJava {
+        options.encoding = "UTF-8"
+        options.release.set(21)
+    }
     jar {
         manifest {
             attributes["Main-Class"] = "uk.protonull.pistomqueue.Main"
