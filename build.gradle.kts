@@ -1,5 +1,6 @@
 plugins {
     id("java")
+    id("application")
     // ShadowJar (https://github.com/GradleUp/shadow/releases)
     id("com.gradleup.shadow") version "8.3.1"
 }
@@ -30,9 +31,22 @@ java {
     }
 }
 
-base {
-    archivesName = "PistomQueue"
-    version = ""
+application {
+    mainClass = "uk.protonull.pistomqueue.Main"
+    applicationDefaultJvmArgs = listOf(
+        "-Xms1G",
+        "-Xmx1G",
+        "-XX:+UseG1GC",
+        "-XX:G1HeapRegionSize=4M",
+        "-XX:+UnlockExperimentalVMOptions",
+        "-XX:+ParallelRefProcEnabled",
+        "-XX:+AlwaysPreTouch",
+        "-Dlog4j2.formatMsgNoLookups=true",
+
+        "-Dport=25571",
+        "-Dproxy=VELOCITY",
+        "-DvelocitySecret=1234567890ADCDEF"
+    )
 }
 
 tasks {
@@ -42,7 +56,7 @@ tasks {
     }
     jar {
         manifest {
-            attributes["Main-Class"] = "uk.protonull.pistomqueue.Main"
+            attributes["Main-Class"] = application.mainClass.get()
         }
         from(file("LICENCE")) {
             rename { "LICENSE_PistomQueue" } // Use US spelling
@@ -53,6 +67,5 @@ tasks {
     }
     shadowJar {
         mergeServiceFiles()
-        archiveClassifier = "" // Prevent the -all suffix
     }
 }
