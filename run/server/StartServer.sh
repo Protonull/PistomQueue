@@ -39,7 +39,7 @@ echo "$(cat <<EOF
 proxies:
   velocity:
     enabled: true
-    online-mode: true
+    online-mode: false
     secret: "1234567890ABCDEF"
 EOF
 )" > config/paper-global.yml
