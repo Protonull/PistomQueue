@@ -64,3 +64,15 @@ java -jar \
     # (CONDITIONAL) Your Velocity secret, which is required assuming you've specified Velocity as your proxy
     -DvelocitySecret="YourSecret"
 ```
+
+## Testing
+
+This repo comes with a test-setup that you can run:
+
+- `sh run/proxy/StartProxy.sh`: This will start a Velocity proxy with [PistonQueue](https://github.com/AlexProgrammerDE/PistonQueue)
+  on port 25565.
+
+- `sh run/server/StartServer.sh`: This will start a PaperMC target server on port 25570. You accept [Minecraft's EULA](https://www.minecraft.net/en-us/eula)
+  by running this script.
+
+- `./gradlew run`: This will start PistomQueue on port 25571.
