@@ -93,8 +93,10 @@ public final class Main {
             });
 
         MinecraftServer.getGlobalEventHandler().addListener(AsyncPlayerConfigurationEvent.class, (event) -> {
-            event.setSpawningInstance(world);
             final Player player = event.getPlayer();
+            MinecraftServer.LOGGER.info("[{}] has connected!", player.getUsername());
+
+            event.setSpawningInstance(world);
             // Put the player relatively randomly
             player.setRespawnPoint(new Pos(
                 ThreadLocalRandom.current().nextDouble(-16, 16),
@@ -106,6 +108,10 @@ public final class Main {
                 player.updateViewableRule((otherPlayer) -> !isExempted);
             }
             player.setGameMode(GameMode.ADVENTURE);
+        });
+
+        MinecraftServer.getGlobalEventHandler().addListener(PlayerDisconnectEvent.class, (event) -> {
+            MinecraftServer.LOGGER.info("[{}] has disconnected!", event.getPlayer().getUsername());
         });
 
         if (Config.PLAY_XP) {
