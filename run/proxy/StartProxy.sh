@@ -22,6 +22,7 @@ latestVelocity() {
 }
 
 download "Velocity" "velocity.jar" "$(latestVelocity)"
+download "PistonQueue" "plugins/PistonQueue-3.0.0.jar" "https://github.com/AlexProgrammerDE/PistonQueue/releases/download/3.0.0/PistonQueue-3.0.0.jar"
 
 java -Xms1G -Xmx1G \
     -XX:+UseG1GC \

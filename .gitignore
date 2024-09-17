@@ -12,6 +12,8 @@
 !/run/proxy/velocity.toml
 !/run/proxy/forwarding.secret
 !/run/proxy/plugins/bStats/config.txt
+!/run/proxy/plugins/pistonqueue/config.yml
+!/run/proxy/plugins/pistonqueue/data.yml
 
 # Created by https://www.toptal.com/developers/gitignore/api/linux,macos,windows,java,gradle
 # Edit at https://www.toptal.com/developers/gitignore?templates=linux,macos,windows,java,gradle
