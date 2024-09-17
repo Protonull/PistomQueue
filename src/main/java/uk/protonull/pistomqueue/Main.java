@@ -121,27 +121,11 @@ public final class Main {
                     return;
                 }
                 final ByteArrayDataInput in = ByteStreams.newDataInput(event.getMessage());
-                if (!"xpV2".equals(in.readUTF())) {
-                    return;
-                }
-                final int amountOfPlayers = in.readInt();
-                for (int i = 0; i < amountOfPlayers; i++) {
-                    final UUID playerUUID; {
-                        final String raw = in.readUTF();
-                        try {
-                            playerUUID = UUID.fromString(raw);
-                        }
-                        catch (final IllegalArgumentException ignored) {
-                            MinecraftServer.LOGGER.warn("[xpV2] Could not parse [{}] into a UUID!", raw);
-                            continue;
-                        }
-                    }
-                    final Player player = PLAYERS.get(playerUUID);
-                    if (player == null) {
-                        MinecraftServer.LOGGER.warn("[xpV2] Received XP chime for non-existent player [{}]", playerUUID);
-                        continue;
-                    }
-                    player.playSound(XP_SOUND, Sound.Emitter.self());
+                final String packetType = in.readUTF();
+                switch (packetType) {
+                    case "xpV2" -> handleXpMessage(in);
+                    case "onlineQueue", "onlineTarget" -> {} // Ignored PlaceholderAPI message
+                    default -> MinecraftServer.LOGGER.warn("Unhandled PistonQueue message [{}]", packetType);
                 }
             });
         }
@@ -177,5 +161,29 @@ public final class Main {
         }
 
         SERVER.start(Config.HOST, Config.PORT);
+    }
+
+    private static void handleXpMessage(
+        final @NotNull ByteArrayDataInput in
+    ) {
+        final int amountOfPlayers = in.readInt();
+        for (int i = 0; i < amountOfPlayers; i++) {
+            final UUID playerUUID; {
+                final String raw = in.readUTF();
+                try {
+                    playerUUID = UUID.fromString(raw);
+                }
+                catch (final IllegalArgumentException ignored) {
+                    MinecraftServer.LOGGER.warn("[xpV2] Could not parse [{}] into a UUID!", raw);
+                    continue;
+                }
+            }
+            final Player player = PLAYERS.get(playerUUID);
+            if (player == null) {
+                MinecraftServer.LOGGER.warn("[xpV2] Received XP chime for non-existent player [{}]", playerUUID);
+                continue;
+            }
+            player.playSound(XP_SOUND, Sound.Emitter.self());
+        }
     }
 }
