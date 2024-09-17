@@ -1,5 +1,17 @@
 /.idea/
-/extensions/
+
+/dist/
+
+/run/server/**/*
+!/run/server/StartServer.sh
+!/run/server/eula.txt
+!/run/server/plugins/bStats/config.yml
+
+/run/proxy/**/*
+!/run/proxy/StartProxy.sh
+!/run/proxy/velocity.toml
+!/run/proxy/forwarding.secret
+!/run/proxy/plugins/bStats/config.txt
 
 # Created by https://www.toptal.com/developers/gitignore/api/linux,macos,windows,java,gradle
 # Edit at https://www.toptal.com/developers/gitignore?templates=linux,macos,windows,java,gradle

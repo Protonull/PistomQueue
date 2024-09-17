@@ -19,6 +19,9 @@ dependencies {
             implementation("commons-net:commons-net:3.11.1")
         }
     }
+
+    implementation("org.tinylog:tinylog-impl:2.7.0")
+    implementation("org.tinylog:slf4j-tinylog:2.7.0")
 }
 
 java {
@@ -28,6 +31,11 @@ java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
     }
+}
+
+base {
+    archivesName = "PistomQueue"
+    version = ""
 }
 
 tasks {
@@ -48,6 +56,6 @@ tasks {
     }
     shadowJar {
         mergeServiceFiles()
-        archiveClassifier.set("") // Prevent the -all suffix
+        archiveClassifier = "" // Prevent the -all suffix
     }
 }
