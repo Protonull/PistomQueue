@@ -1,5 +1,6 @@
 package uk.protonull.pistomqueue;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -23,65 +24,19 @@ import net.minestom.server.extras.velocity.VelocityProxy;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.instance.generator.GenerationUnit;
+import net.minestom.server.particle.Particle;
+import net.minestom.server.registry.DynamicRegistry;
 import net.minestom.server.utils.NamespaceID;
 import net.minestom.server.world.DimensionType;
-import net.minestom.server.world.biomes.Biome;
-import net.minestom.server.world.biomes.BiomeEffects;
-import net.minestom.server.world.biomes.BiomeParticle;
+import net.minestom.server.world.biome.Biome;
+import net.minestom.server.world.biome.BiomeEffects;
+import net.minestom.server.world.biome.BiomeParticle;
 import org.jetbrains.annotations.NotNull;
 import uk.protonull.pistomqueue.utilities.StringIterator;
 
 public final class Main {
     private static final MinecraftServer SERVER = MinecraftServer.init();
-
-    public static final DimensionType DIMENSION; static {
-        MinecraftServer.getDimensionTypeManager().addDimension(
-            DIMENSION = DimensionType
-                .builder(NamespaceID.from("minecraft:queue"))
-                .effects("minecraft:the_end")
-                .build()
-        );
-    }
-
-    public static final Biome BIOME; static {
-        MinecraftServer.getBiomeManager().addBiome(
-            BIOME = Biome
-                .builder()
-                .name(NamespaceID.from("minecraft:queue"))
-                .effects(
-                    BiomeEffects
-                        .builder()
-                        .biomeParticle(new BiomeParticle(
-                            0.3f,
-                            new BiomeParticle.NormalOption(NamespaceID.from("minecraft:underwater")))
-                        )
-                        .build()
-                )
-                .build()
-        );
-    }
-
-    public static final InstanceContainer WORLD = MinecraftServer.getInstanceManager().createInstanceContainer(DIMENSION); static {
-        WORLD.setGenerator((final GenerationUnit unit) -> {
-            unit.modifier().fillBiome(BIOME);
-            unit.modifier().fillHeight(0, 1, Block.BARRIER);
-        });
-    }
-
-    public static final Map<UUID, Player> PLAYERS = new TreeMap<>(); static {
-        //noinspection UnstableApiUsage
-        WORLD.eventNode()
-            .addListener(AddEntityToInstanceEvent.class, (event) -> {
-                if (event.getEntity() instanceof final Player player) {
-                    PLAYERS.put(player.getUuid(), player);
-                }
-            })
-            .addListener(RemoveEntityFromInstanceEvent.class, (event) -> {
-                if (event.getEntity() instanceof final Player player) {
-                    PLAYERS.remove(player.getUuid());
-                }
-            });
-    }
+    private static final Map<UUID, Player> PLAYERS = Collections.synchronizedMap(new TreeMap<>());
 
     public static final Sound XP_SOUND = Sound.sound(
         Key.key("entity.player.levelup"),
@@ -95,8 +50,49 @@ public final class Main {
     ) {
         MinecraftServer.setBrandName("PistomQueue");
 
+        final DynamicRegistry.Key<DimensionType> dimension = MinecraftServer.getDimensionTypeRegistry().register(
+            NamespaceID.from("minecraft:queue"),
+            DimensionType.builder()
+                .effects("minecraft:the_end")
+                .build()
+        );
+
+        final DynamicRegistry.Key<Biome> biome = MinecraftServer.getBiomeRegistry().register(
+            NamespaceID.from("minecraft:queue"),
+            Biome.builder()
+                .effects(
+                    BiomeEffects
+                        .builder()
+                        .biomeParticle(new BiomeParticle(
+                            0.3f,
+                            Particle.fromNamespaceId(NamespaceID.from("minecraft:underwater"))
+                        ))
+                        .build()
+                )
+                .build()
+        );
+
+        final InstanceContainer world = MinecraftServer.getInstanceManager().createInstanceContainer(dimension);
+        world.setGenerator((final GenerationUnit unit) -> {
+            unit.modifier().fillBiome(biome);
+            unit.modifier().fillHeight(0, 1, Block.BARRIER);
+        });
+
+        //noinspection UnstableApiUsage
+        world.eventNode()
+            .addListener(AddEntityToInstanceEvent.class, (event) -> {
+                if (event.getEntity() instanceof final Player player) {
+                    PLAYERS.put(player.getUuid(), player);
+                }
+            })
+            .addListener(RemoveEntityFromInstanceEvent.class, (event) -> {
+                if (event.getEntity() instanceof final Player player) {
+                    PLAYERS.remove(player.getUuid());
+                }
+            });
+
         MinecraftServer.getGlobalEventHandler().addListener(AsyncPlayerConfigurationEvent.class, (event) -> {
-            event.setSpawningInstance(WORLD);
+            event.setSpawningInstance(world);
             final Player player = event.getPlayer();
             // Put the player relatively randomly
             player.setRespawnPoint(new Pos(
@@ -106,7 +102,6 @@ public final class Main {
             ));
             final boolean isExempted = Config.EXEMPTED_PLAYERS.contains(player.getUsername());
             if (Config.HIDE_PLAYERS) {
-                //noinspection UnstableApiUsage
                 player.updateViewableRule((otherPlayer) -> !isExempted);
             }
             player.setGameMode(GameMode.ADVENTURE);

@@ -13,11 +13,8 @@ repositories {
 }
 
 dependencies {
-    implementation("net.minestom:minestom-snapshots:+") {
+    implementation("net.minestom:minestom-snapshots:4305006e6b") {
         isChanging = true
-        constraints {
-            implementation("commons-net:commons-net:3.11.1")
-        }
     }
 
     implementation("org.tinylog:tinylog-impl:2.7.0")
