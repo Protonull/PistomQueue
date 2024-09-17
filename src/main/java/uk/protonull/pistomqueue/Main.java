@@ -2,11 +2,8 @@ package uk.protonull.pistomqueue;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
-import java.util.Collections;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import net.kyori.adventure.key.Key;
@@ -15,8 +12,6 @@ import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.GameMode;
 import net.minestom.server.entity.Player;
-import net.minestom.server.event.instance.AddEntityToInstanceEvent;
-import net.minestom.server.event.instance.RemoveEntityFromInstanceEvent;
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent;
 import net.minestom.server.event.player.PlayerChatEvent;
 import net.minestom.server.event.player.PlayerDisconnectEvent;
@@ -37,7 +32,6 @@ import org.jetbrains.annotations.NotNull;
 
 public final class Main {
     private static final MinecraftServer SERVER = MinecraftServer.init();
-    private static final Map<UUID, Player> PLAYERS = Collections.synchronizedMap(new TreeMap<>());
 
     public static final Sound XP_SOUND = Sound.sound(
         Key.key("entity.player.levelup"),
@@ -78,19 +72,6 @@ public final class Main {
             unit.modifier().fillBiome(biome);
             unit.modifier().fillHeight(0, 1, Block.BARRIER);
         });
-
-        //noinspection UnstableApiUsage
-        world.eventNode()
-            .addListener(AddEntityToInstanceEvent.class, (event) -> {
-                if (event.getEntity() instanceof final Player player) {
-                    PLAYERS.put(player.getUuid(), player);
-                }
-            })
-            .addListener(RemoveEntityFromInstanceEvent.class, (event) -> {
-                if (event.getEntity() instanceof final Player player) {
-                    PLAYERS.remove(player.getUuid());
-                }
-            });
 
         MinecraftServer.getGlobalEventHandler().addListener(AsyncPlayerConfigurationEvent.class, (event) -> {
             final Player player = event.getPlayer();
@@ -178,7 +159,7 @@ public final class Main {
                     continue;
                 }
             }
-            final Player player = PLAYERS.get(playerUUID);
+            final Player player = MinecraftServer.getConnectionManager().getOnlinePlayerByUuid(playerUUID);
             if (player == null) {
                 MinecraftServer.LOGGER.warn("[xpV2] Received XP chime for non-existent player [{}]", playerUUID);
                 continue;
