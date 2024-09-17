@@ -20,6 +20,8 @@ dependencies {
 
     implementation("org.tinylog:tinylog-impl:2.7.0")
     implementation("org.tinylog:slf4j-tinylog:2.7.0")
+
+    implementation("com.google.guava:guava:33.3.0-jre")
 }
 
 java {

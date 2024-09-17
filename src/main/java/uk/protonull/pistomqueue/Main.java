@@ -1,8 +1,9 @@
 package uk.protonull.pistomqueue;
 
+import com.google.common.io.ByteArrayDataInput;
+import com.google.common.io.ByteStreams;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
@@ -18,6 +19,7 @@ import net.minestom.server.event.instance.AddEntityToInstanceEvent;
 import net.minestom.server.event.instance.RemoveEntityFromInstanceEvent;
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent;
 import net.minestom.server.event.player.PlayerChatEvent;
+import net.minestom.server.event.player.PlayerDisconnectEvent;
 import net.minestom.server.event.player.PlayerPluginMessageEvent;
 import net.minestom.server.extras.bungee.BungeeCordProxy;
 import net.minestom.server.extras.velocity.VelocityProxy;
@@ -32,7 +34,6 @@ import net.minestom.server.world.biome.Biome;
 import net.minestom.server.world.biome.BiomeEffects;
 import net.minestom.server.world.biome.BiomeParticle;
 import org.jetbrains.annotations.NotNull;
-import uk.protonull.pistomqueue.utilities.StringIterator;
 
 public final class Main {
     private static final MinecraftServer SERVER = MinecraftServer.init();
@@ -113,15 +114,29 @@ public final class Main {
                 if (!"piston:queue".equals(event.getIdentifier())) {
                     return;
                 }
-                final var in = new StringIterator(event.getMessage());
-                if (!"xp".equals(in.next())) {
+                final ByteArrayDataInput in = ByteStreams.newDataInput(event.getMessage());
+                if (!"xpV2".equals(in.readUTF())) {
                     return;
                 }
-                in.toStream()
-                    .map(UUID::fromString)
-                    .map(PLAYERS::get)
-                    .filter(Objects::nonNull)
-                    .forEach((player) -> player.playSound(XP_SOUND, Sound.Emitter.self()));
+                final int amountOfPlayers = in.readInt();
+                for (int i = 0; i < amountOfPlayers; i++) {
+                    final UUID playerUUID; {
+                        final String raw = in.readUTF();
+                        try {
+                            playerUUID = UUID.fromString(raw);
+                        }
+                        catch (final IllegalArgumentException ignored) {
+                            MinecraftServer.LOGGER.warn("[xpV2] Could not parse [{}] into a UUID!", raw);
+                            continue;
+                        }
+                    }
+                    final Player player = PLAYERS.get(playerUUID);
+                    if (player == null) {
+                        MinecraftServer.LOGGER.warn("[xpV2] Received XP chime for non-existent player [{}]", playerUUID);
+                        continue;
+                    }
+                    player.playSound(XP_SOUND, Sound.Emitter.self());
+                }
             });
         }
 
