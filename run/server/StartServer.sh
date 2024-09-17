@@ -26,8 +26,23 @@ download "PaperMC" "paper.jar" "$(latestPaper "1.21.1")"
 echo "$(cat <<EOF
 online-mode=false
 server-port=25570
+query.port=25570
 EOF
 )" > server.properties
+
+# Make the config dir if it doesn't already exist
+if [ ! -d "config/" ]; then
+    mkdir "config"
+fi
+
+echo "$(cat <<EOF
+proxies:
+  velocity:
+    enabled: true
+    online-mode: true
+    secret: "1234567890ABCDEF"
+EOF
+)" > config/paper-global.yml
 
 java -Xms2G -Xmx2G \
     -XX:+UseG1GC \

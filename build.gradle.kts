@@ -47,7 +47,7 @@ application {
 
         "-Dport=25571",
         "-Dproxy=VELOCITY",
-        "-DvelocitySecret=1234567890ADCDEF"
+        "-DvelocitySecret=1234567890ABCDEF"
     )
 }
 
