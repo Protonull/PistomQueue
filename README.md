@@ -12,7 +12,7 @@ case for [Minestom](https://github.com/Minestom/Minestom). You should probably u
 ## Install
 
 You can either use the provided latest build [here](https://github.com/Protonull/PistomQueue/releases/tag/latest) or you
-can compile it yourself with JDK 17 by doing:
+can compile it yourself with JDK 21 by doing:
 ```shell
 git clone https://github.com/Protonull/PistomQueue.git
 cd PistomQueue
